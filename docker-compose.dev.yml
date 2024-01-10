@@ -1,0 +1,47 @@
+version: "3.9"
+
+services:
+    mongo-db:
+        image: mongo
+        container_name: mongo-db
+        networks:
+            - softslid-networks
+        ports:
+            - "27017:27017"
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: "root"
+            MONGO_INITDB_ROOT_PASSWORD: "1234"
+
+    backend:
+        build:
+            context: ./backend
+            target: development
+        command: npm run dev
+        tty: true
+        restart: unless-stopped
+        ports: ["8080:8080"]
+        networks:
+            - softslid-networks
+        volumes:
+            - ./backend/src:/backend/src:cached
+            - /backend/node_modules
+        env_file: [./backend/.env]
+
+    client:
+        build:
+            context: ./client
+            dockerfile: Dockerfile.dev
+        tty: true
+        restart: unless-stopped
+        ports: ["3000:3000"]
+        networks:
+            - softslid-networks
+        volumes:
+            - ./client/src:/client/src:cached,ro
+            - ./client/public:/client/public:cached,ro
+        env_file: [./client/.env]
+        depends_on: ["backend"]
+
+networks:
+    softslid-networks:
+
