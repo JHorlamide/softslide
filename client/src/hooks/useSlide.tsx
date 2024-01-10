@@ -22,6 +22,8 @@ export const useSlide = () => {
       toast.error("Googled drive closed");
     }
 
+    console.log({ data })
+
     const embedURL = data.docs[0].embedUrl;
     const presentationId = extractSlidesKey(embedURL) as string;
     localStorage.setItem("presentationId", presentationId)

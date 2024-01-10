@@ -1,4 +1,5 @@
-import fs from "node:fs"
+import fs from "node:fs/promises"
+import fs2 from "fs";
 
 /* Libraries */
 import { google, Auth } from "googleapis";
@@ -7,6 +8,11 @@ import { google, Auth } from "googleapis";
 import config from "../../config/app.config";
 import { ServerError } from "../../common/exceptions/api.error";
 import path from "node:path";
+
+interface Token {
+  access_token: string | null | undefined;
+  refresh_token: string | null | undefined;
+}
 
 class AuthService {
   scope: string[];
@@ -27,7 +33,7 @@ class AuthService {
     this.clientSecrete = config.clientSecrete;
     this.redirectUrl = config.redirectUrl;
     this.oAuth2Client = new google.auth.OAuth2(this.clientId, this.clientSecrete, this.redirectUrl);
-    this.TOKEN_PATH = path.join(process.cwd(), "./src/token_db.json")
+    this.TOKEN_PATH = path.join(process.cwd(), "/src/token_db.json")
   }
 
   public getAuthUrl() {
@@ -51,22 +57,31 @@ class AuthService {
         access_token
       });
 
+      await this.saveAuthCredential({ access_token, refresh_token });
       return this.getClientRedirectURL(access_token, refresh_token);
     } catch (error: any) {
       throw new ServerError(error.message);
     }
   }
 
-  public async saveAuthCredential({ access_token, refresh_token }: { access_token: string, refresh_token: string }) {
+  public async saveAuthCredential({ access_token, refresh_token }: Token) {
     const payload = JSON.stringify({
       access_token,
       refresh_token
     });
 
-    return await fs.writeFile(this.TOKEN_PATH, payload, { encoding: "utf-8" });
+    return await fs.writeFile(this.TOKEN_PATH, payload);
   }
 
   public getAuth() {
+    const fileContent = fs2.readFileSync(this.TOKEN_PATH, { encoding: "utf-8" });
+    const credential = JSON.parse(fileContent)
+
+    this.oAuth2Client.setCredentials({
+      access_token: credential.access_token,
+      refresh_token: credential.refresh_token
+    })
+
     return this.oAuth2Client;
   }
 

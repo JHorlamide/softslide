@@ -93,20 +93,20 @@ class SlideManagerService {
           elementProperties: {
             pageObjectId: slideId,
             size: {
-              width: { magnitude: 13100, unit: "EMU" },
-              height: { magnitude: 30, unit: "PT" },
+              width: { magnitude: 700, unit: "PT" },
+              height: { magnitude: 40, unit: "PT" },
             },
             transform: {
               scaleX: 1,
               scaleY: 1,
               translateX: 0,
-              translateY: 100,
+              translateY: 360,
               unit: 'PT',
             },
           },
         },
       },
-
+    
       /* Insert text into the box, using the supplied element ID. */
       {
         insertText: {
@@ -138,8 +138,6 @@ class SlideManagerService {
       throw new ServerError(error.message);
     }
   }
-
-
 
   private generateUniqueID() {
     const length = 10;
