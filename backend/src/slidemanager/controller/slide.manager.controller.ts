@@ -27,9 +27,25 @@ class SlideManagerController {
 
   public addCommentToSlide = asyncHandler(async (req: Request, res: Response) => {
     const { presentationId, slideId, comment } = req.body;
-    const response = await slideManagerService.addCommentToSlide({ comment, presentationId, slideId });
+    const response = await slideManagerService.addCommentToSlide({
+      comment,
+      slideId,
+      presentationId,
+    });
+
     responseHandler.resourceCreated("Commented added successfully", response, res);
-  })
+  });
+
+  public addMetricToSlide = asyncHandler(async (req: Request, res: Response) => {
+    const { presentationId, slideId, spreadsheetId } = req.body;
+    const response = await slideManagerService.addChartToSlide({
+      slideId,
+      presentationId,
+      spreadsheetId
+    });
+
+    responseHandler.resourceCreated("Chart added successfully", { ...response }, res);
+  });
 }
 
 export default new SlideManagerController();

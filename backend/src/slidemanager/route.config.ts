@@ -63,6 +63,11 @@ export class SlideManagerRoute extends CommonRoutesConfig {
       slideController.addCommentToSlide
     ]);
 
+    this.app.post(`${APP_PREFIX_PATH}/slides/chart`, [
+      slideMiddleware.validateAddChartReq,
+      slideController.addMetricToSlide
+    ]);
+
     return this.app;
   }
 }

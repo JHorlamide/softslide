@@ -14,7 +14,7 @@ const Home = () => {
     loading,
     handleOpenPicker,
     createNewGoogleSlide
-  } = useSlide();
+  } = useSlide({ docType: "slide" });
 
   return (
     <Box width="full">

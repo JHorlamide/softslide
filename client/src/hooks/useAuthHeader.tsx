@@ -30,10 +30,6 @@ export const useAuthHeader = () => {
     setLoginUrl(data.data);
   }
 
-  const handlePastDocument = () => {
-
-  }
-
   const handlePublishDocument = () => {
 
   }
@@ -65,7 +61,6 @@ export const useAuthHeader = () => {
     onClose,
     onOpen,
     onSubmit,
-    handlePastDocument,
     handlePublishDocument,
   }
 }

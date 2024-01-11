@@ -1,17 +1,6 @@
 version: "3.9"
 
 services:
-    mongo-db:
-        image: mongo
-        container_name: mongo-db
-        networks:
-            - softslid-networks
-        ports:
-            - "27017:27017"
-        environment:
-            MONGO_INITDB_ROOT_USERNAME: "root"
-            MONGO_INITDB_ROOT_PASSWORD: "1234"
-
     backend:
         build:
             context: ./backend

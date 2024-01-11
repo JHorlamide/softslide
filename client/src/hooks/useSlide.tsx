@@ -1,32 +1,37 @@
 import { useState } from "react";
-import useDrivePicker from "react-google-drive-picker";
+
+/* Libraries */
 import { PickerCallback } from "react-google-drive-picker/dist/typeDefs";
+import useDrivePicker from "react-google-drive-picker";
 import toast from "react-hot-toast";
+
+/* Application Modules */
 import { CLIENT_ID, DEVELOPER_KEY } from "../config/AppConfig";
 import { slideService } from "../services/restService";
 
-export const useSlide = () => {
+interface UseSlidProps {
+  docType?: "slide" | "sheet"
+}
+
+export const useSlide = ({ docType }: UseSlidProps) => {
   const [openPicker] = useDrivePicker();
   const [loading, setLoading] = useState(false);
   const accessToken = localStorage.getItem("access_token");
   const presentationId = localStorage.getItem("presentationId") as string;
-
-  const extractSlidesKey = (slidesUrl: string): string | null => {
-    const regex: RegExp = new RegExp(`(((https|http):\/\/|)docs\.google\.com\/presentation\/d\/)(.+?(?=(\/.+|\/|$)))`);
-    const match = regex.exec(slidesUrl);
-    return match ? match[4] : null;
-  };
 
   const callBackFun = (data: PickerCallback) => {
     if (data.action === 'cancel') {
       toast.error("Googled drive closed");
     }
 
-    console.log({ data })
+    const selectedDocId = data.docs[0].id;
 
-    const embedURL = data.docs[0].embedUrl;
-    const presentationId = extractSlidesKey(embedURL) as string;
-    localStorage.setItem("presentationId", presentationId)
+    if (docType === "slide") {
+      localStorage.setItem("presentationId", selectedDocId);
+      window.location.reload();
+    } else {
+      localStorage.setItem("selected_doc_id", selectedDocId);
+    }
   }
 
   const handleOpenPicker = () => {

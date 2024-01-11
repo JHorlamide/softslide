@@ -22,7 +22,6 @@
     "helmet": "^6.0.1",
     "http-status": "^1.6.2",
     "joi": "^17.9.1",
-    "mongoose": "^7.4.0",
     "winston": "^3.8.2"
   },
   "devDependencies": {

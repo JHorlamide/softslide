@@ -16,7 +16,8 @@ const config = {
   clientRedirectURL: `${process.env.ALLOWED_ORIGIN_URL}`,
   scope: [
     "https://www.googleapis.com/auth/presentations.readonly",
-    "https://www.googleapis.com/auth/presentations"
+    "https://www.googleapis.com/auth/presentations",
+    "https://www.googleapis.com/auth/spreadsheets.readonly"
   ]
 }
 

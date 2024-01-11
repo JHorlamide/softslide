@@ -3,13 +3,15 @@ import {
   getSlidesSchema,
   createSlidSchema,
   addCommentSchema,
+  addChartSchema,
   createPresentationSchema
 } from "../validation/validation.schema";
 
 class SlideManagerMiddleware {
   public validateCreatePresentationReq = reqBodyValidator(createPresentationSchema);
   public validateCreateSlidReq = reqBodyValidator(createSlidSchema);
-  public validateCreateCommentReq = reqBodyValidator(addCommentSchema)
+  public validateCreateCommentReq = reqBodyValidator(addCommentSchema);
+  public validateAddChartReq = reqBodyValidator(addChartSchema)
   public validatePresentationIdExistInParam = reqParamValidator(getSlidesSchema);
 }
 

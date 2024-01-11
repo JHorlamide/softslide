@@ -2,7 +2,7 @@
 import crypto from "crypto";
 
 /* Libraries */
-import { google, slides_v1 } from "googleapis";
+import { google, slides_v1, sheets_v4 } from "googleapis";
 
 /* Application Modules */
 import authService from "../../auth/service/auth.service";
@@ -14,11 +14,20 @@ interface CreateComment {
   presentationId: string;
 }
 
+interface CreateChartSlide {
+  presentationId: string;
+  spreadsheetId: string;
+  slideId: string;
+}
+
 class SlideManagerService {
   private slideService: slides_v1.Slides;
 
+  private sheetService: sheets_v4.Sheets;
+
   constructor() {
     const auth = authService.getAuth();
+    this.sheetService = google.sheets({ version: "v4", auth });
     this.slideService = google.slides({ version: "v1", auth });
   }
 
@@ -106,7 +115,7 @@ class SlideManagerService {
           },
         },
       },
-    
+
       /* Insert text into the box, using the supplied element ID. */
       {
         insertText: {
@@ -135,6 +144,75 @@ class SlideManagerService {
         throw new ClientError(error.message);
       };
 
+      throw new ServerError(error.message);
+    }
+  }
+
+  public async addChartToSlide({ presentationId, slideId, spreadsheetId }: CreateChartSlide) {
+    const presentationChartId = this.generateUniqueID();
+
+    try {
+      const chartId = await this.getChartId(spreadsheetId);
+
+      const emu4M = {
+        magnitude: 4000000,
+        unit: 'EMU',
+      };
+
+      const requests = [
+        {
+          createSheetsChart: {
+            objectId: presentationChartId,
+            spreadsheetId: spreadsheetId,
+            chartId: chartId,
+            linkingMode: 'LINKED',
+            elementProperties: {
+              pageObjectId: slideId,
+              size: {
+                height: emu4M,
+                width: emu4M,
+              },
+              transform: {
+                scaleX: 2,
+                scaleY: 1.5,
+                translateX: 100000,
+                translateY: 100000,
+                unit: 'EMU',
+              },
+            },
+          },
+        },
+      ];
+
+      const response = await this.slideService.presentations.batchUpdate({
+        presentationId,
+        requestBody: { requests }
+      });
+
+      return response.data;
+    } catch (error: any) {
+      throw new ServerError(error.message);
+    }
+  }
+
+  private async getChartId(sheetId: string) {
+    try {
+      const sheet = await this.sheetService.spreadsheets.get({
+        spreadsheetId: sheetId,
+        ranges: ["Traffic Dashboard"]
+      });
+
+      if (!sheet.data?.sheets?.length) {
+        throw new ClientError("No sheet found");
+      }
+
+      const charts = sheet.data.sheets[0]?.charts;
+      if (!charts || !charts[0]?.chartId) {
+        throw new ClientError("No chart found");
+      }
+
+      return charts[0].chartId;
+    } catch (error: any) {
       throw new ServerError(error.message);
     }
   }

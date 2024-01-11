@@ -11,11 +11,7 @@ export function errorHandler(error: APIError, req: Request, res: Response, next:
 
   const defaultError = {
     message: error.message || "Server error. Please try again later",
-    stack: error.stack,
-  }
-
-  if (error.statusCode === 400) {
-    delete defaultError.stack;
+    statusCode: error.statusCode || 500
   }
 
   const errorObject = Object.assign({}, defaultError, error);

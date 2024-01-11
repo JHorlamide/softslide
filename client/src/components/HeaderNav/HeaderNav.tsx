@@ -8,6 +8,7 @@ import Button from "../CustomBtn/Button"
 import { useAuthHeader } from "../../hooks/useAuthHeader";
 import DynamicContentModal from "../DynamicContentModel/DynamicContentModal";
 import { Fragment } from "react";
+import { useSlide } from "../../hooks/useSlide";
 
 interface SignedHeaderProps {
   logout: () => void;
@@ -105,11 +106,11 @@ const SignInHeader = ({ submit }: { submit: () => void }) => {
 const HeaderNav = () => {
   const presentationId = localStorage.getItem("presentationId");
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { handleOpenPicker } = useSlide({ docType: "sheet" });
   const {
     isTokenExist,
     logout,
     onSubmit,
-    handlePastDocument,
     handlePublishDocument
   } = useAuthHeader();
 
@@ -130,7 +131,7 @@ const HeaderNav = () => {
             presentationId={presentationId}
             logout={logout}
             openAddContentModal={() => onOpen()}
-            handlePastDocument={handlePastDocument}
+            handlePastDocument={handleOpenPicker}
             handlePublishDocument={handlePublishDocument}
           />
         ) : (
