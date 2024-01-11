@@ -55,9 +55,9 @@ export const useAuthHeader = () => {
   }, []);
 
   return {
+    isOpen,
     isTokenExist,
     logout,
-    isOpen,
     onClose,
     onOpen,
     onSubmit,

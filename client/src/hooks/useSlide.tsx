@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 
 /* Libraries */
 import { PickerCallback } from "react-google-drive-picker/dist/typeDefs";
@@ -25,7 +25,6 @@ export const useSlide = ({ docType }: UseSlidProps) => {
     }
 
     const selectedDocId = data.docs[0].id;
-
     if (docType === "slide") {
       localStorage.setItem("presentationId", selectedDocId);
       window.location.reload();

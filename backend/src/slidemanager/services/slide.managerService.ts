@@ -6,7 +6,11 @@ import { google, slides_v1, sheets_v4 } from "googleapis";
 
 /* Application Modules */
 import authService from "../../auth/service/auth.service";
-import { ClientError, NotFoundError, ServerError } from "../../common/exceptions/api.error";
+import {
+  ClientError,
+  NotFoundError,
+  ServerError
+} from "../../common/exceptions/api.error";
 
 interface CreateComment {
   comment: string;
@@ -175,9 +179,9 @@ class SlideManagerService {
               transform: {
                 scaleX: 2,
                 scaleY: 1.5,
-                translateX: 100000,
-                translateY: 100000,
-                unit: 'EMU',
+                translateX: 0,
+                translateY: 5,
+                unit: 'PT',
               },
             },
           },
@@ -195,11 +199,12 @@ class SlideManagerService {
     }
   }
 
-  private async getChartId(sheetId: string) {
+  private async getChartId(spreadsheetId: string) {
     try {
+      const sheetRanges = await this.getSpreadSheetRange(spreadsheetId, 1);
       const sheet = await this.sheetService.spreadsheets.get({
-        spreadsheetId: sheetId,
-        ranges: ["Traffic Dashboard"]
+        spreadsheetId,
+        ranges: [sheetRanges]
       });
 
       if (!sheet.data?.sheets?.length) {
@@ -212,6 +217,22 @@ class SlideManagerService {
       }
 
       return charts[0].chartId;
+    } catch (error: any) {
+      throw new ServerError(error.message);
+    }
+  }
+
+  private async getSpreadSheetRange(spreadsheetId: string, range: number) {
+    try {
+      const sheet = await this.sheetService.spreadsheets.get({
+        spreadsheetId
+      });
+
+      if (!sheet.data?.sheets?.length) {
+        throw new ClientError("No sheet found");
+      }
+
+      return sheet.data?.sheets[range].properties?.title as string;
     } catch (error: any) {
       throw new ServerError(error.message);
     }

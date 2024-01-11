@@ -12,8 +12,8 @@ class AuthController {
   });
 
   public handleAuthenticationCallback = asyncHandler(async (req: Request, res: Response) => {
-    const code = req.query.code;
-    const clientRedirectURL = await authService.handleAuthenticationCallBack(code);
+    const { code } = req.query;
+    const clientRedirectURL = await authService.handleAuthenticationCallBack(code as string);
     responseHandler.redirectResponse(clientRedirectURL, res);
   });
 }

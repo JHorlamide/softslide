@@ -47,7 +47,7 @@ class AuthService {
   }
 
   /* Exchange the authorization code for access and refresh tokens */
-  public async handleAuthenticationCallBack(code: any) {
+  public async handleAuthenticationCallBack(code: string) {
     try {
       const { tokens } = await this.oAuth2Client.getToken(code);
       const { access_token, refresh_token } = tokens;
