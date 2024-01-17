@@ -11,18 +11,7 @@ import {
   NotFoundError,
   ServerError
 } from "../../common/exceptions/api.error";
-
-interface CreateComment {
-  comment: string;
-  slideId: string;
-  presentationId: string;
-}
-
-interface CreateChartSlide {
-  presentationId: string;
-  spreadsheetId: string;
-  slideId: string;
-}
+import { CreateChartSlide, CreateComment } from "../types/types";
 
 class SlideManagerService {
   private slideService: slides_v1.Slides;
@@ -51,7 +40,7 @@ class SlideManagerService {
     }
   }
 
-  public async createSlidPresentation(title: string): Promise<string> {
+  public async createSlidePresentation(title: string): Promise<string> {
     const presentation = await this.slideService.presentations.create({
       requestBody: { title }
     });
@@ -59,7 +48,7 @@ class SlideManagerService {
     return presentation.data.presentationId as string;
   }
 
-  public async createSlid(presentationId: string): Promise<string | null | undefined> {
+  public async createSlide(presentationId: string): Promise<string | null | undefined> {
     const pageId = this.generateUniqueID();
 
     const requests = [

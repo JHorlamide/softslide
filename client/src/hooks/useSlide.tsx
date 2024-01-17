@@ -47,25 +47,29 @@ export const useSlide = ({ docType }: UseSlidProps) => {
     })
   }
 
-  const createNewGoogleSlide = async () => {
-    /** Using hardcoded presentation title here because
-     * the use does not specify how collection the new
-     * presentation title
-     */
-    const NEW_SLIDE_TITLE = "NEW PRESENTATION SLIDE";
+  const createNewGoogleSlide = async (title: string) => {
     try {
       setLoading(true);
-      const response = await slideService.createPresentation({ title: NEW_SLIDE_TITLE });
+      const response = await slideService.createPresentation({ title });
+
       if (response.status === 201) {
         setLoading(false);
         const { data } = response.data;
         localStorage.setItem("presentationId", data.presentationId);
+        localStorage.setItem("slideTitle", data.title);
       } else {
+        console.log({ response })
         toast.error("Error creating slide");
       }
     } catch (error: any) {
       setLoading(false);
-      toast.error(error.message);
+
+      if (error.response && error.response.data) {
+        const { message } = error.response.data;
+        toast.error(message);
+      } else {
+        toast.error(error.message);
+      }
     }
   }
 

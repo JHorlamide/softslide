@@ -15,13 +15,13 @@ class SlideManagerController {
 
   public createSlidePresentation = asyncHandler(async (req: Request, res: Response) => {
     const { title } = req.body;
-    const presentationId = await slideManagerService.createSlidPresentation(title);
-    responseHandler.resourceCreated("Slide created successfully", { presentationId }, res);
+    const presentationId = await slideManagerService.createSlidePresentation(title);
+    responseHandler.resourceCreated("Slide created successfully", { presentationId, title }, res);
   });
 
   public createSlide = asyncHandler(async (req: Request, res: Response) => {
     const { presentationId } = req.body;
-    const slideId = await slideManagerService.createSlid(presentationId);
+    const slideId = await slideManagerService.createSlide(presentationId);
     responseHandler.resourceCreated("Slide created successfully", { slideId }, res);
   });
 

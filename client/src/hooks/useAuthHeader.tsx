@@ -22,12 +22,22 @@ export const useAuthHeader = () => {
     localStorage.setItem("access_token", accessToken);
     localStorage.setItem("refresh_token", refreshToken);
     window.close();
+
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000);
+
+    console.log("I was called");
   }
 
   const getLoginUrl = async () => {
-    const response = await authService.getLoginUrl();
-    const data = response.data;
-    setLoginUrl(data.data);
+    try {
+      const response = await authService.getLoginUrl();
+      const data = response.data;
+      setLoginUrl(data.data);
+    } catch (error: any) {
+      console.log("GET LOGIN URL ERROR: ", error.message);
+    }
   }
 
   const handlePublishDocument = () => {

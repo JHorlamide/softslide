@@ -17,7 +17,8 @@ const config = {
   scope: [
     "https://www.googleapis.com/auth/presentations.readonly",
     "https://www.googleapis.com/auth/presentations",
-    "https://www.googleapis.com/auth/spreadsheets.readonly"
+    "https://www.googleapis.com/auth/spreadsheets.readonly",
+    "https://www.googleapis.com/auth/drive.file"
   ]
 }
 
