@@ -14,12 +14,18 @@ import {
 } from "@chakra-ui/react"
 
 interface CreateSlidModalProps {
+  loading: boolean;
   isOpen: boolean,
   onClose: () => void;
   handleCreate: (title: string) => void;
 }
 
-const CreateSlidModal = ({ isOpen, onClose, handleCreate }: CreateSlidModalProps) => {
+const CreateSlidModal = ({
+  loading,
+  isOpen,
+  onClose,
+  handleCreate
+}: CreateSlidModalProps) => {
   const [title, setTitle] = useState("");
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -61,6 +67,7 @@ const CreateSlidModal = ({ isOpen, onClose, handleCreate }: CreateSlidModalProps
         <ModalFooter display="flex" justifyContent="space-between" color="white">
           <Button
             ml={3}
+            isLoading={loading}
             bg="blackAlpha.800"
             _hover={{ bg: "blackAlpha.800" }}
             onClick={() => handleCreate(title)}

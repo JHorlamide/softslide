@@ -7,9 +7,11 @@ import GoogleSlide from "../components/GoogleSlides/GoogleSlides";
 import { useEffect, useState } from "react";
 import { slideService } from "../services/restService";
 
+
 const Slides = () => {
   const [slides, setSlides] = useState<any[]>([]);
   const presentationId = localStorage.getItem("presentationId") as string;
+  const slideTitle = localStorage.getItem("slideTitle") as string;
 
   const fetchSlides = async () => {
     try {
@@ -38,16 +40,12 @@ const Slides = () => {
           height="full"
           width="20%"
         >
-          {slides.map((slide, index) => (
-            <GoogleSlide
-              key={slide.objectId}
-              width="230"
-              height="130"
-              borderRadius="5px"
-              presentationId={presentationId}
-              position={index + 1}
-            />
-          ))}
+          <GoogleSlide
+            key={1}
+            width="230"
+            height="130"
+            borderRadius="5px"
+          />
         </Flex>
 
         <Flex
@@ -55,19 +53,15 @@ const Slides = () => {
           gap={4}
           flexDirection="column"
           overflowY="auto"
-          width="fit-content"
+          width="full"
         >
-          {slides.map((slide, index) => (
-            <GoogleSlide
-              key={slide.objectId}
-              height="500"
-              width="890"
-              borderRadius="10px"
-              presentationId={presentationId}
-              position={index + 1}
-              slideTitle="$0.3m ARR gap to close in Q3 in order to hit Q3 Board target"
-            />
-          ))}
+          <GoogleSlide
+            key={1}
+            height="500"
+            width="full"
+            borderRadius="10px"
+            slideTitle={slideTitle}
+          />
         </Flex>
       </Flex>
 

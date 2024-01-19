@@ -1,76 +1,93 @@
-import React from 'react';
-import { Box, Text } from '@chakra-ui/react'
+import React, { Fragment } from 'react';
+
+/* Libraries */
+import { Box, Text, } from '@chakra-ui/react'
+
+/* Application Modules */
+import { useTextContent } from '../../hooks/useTextContent';
+import AddNewComponent from './AddNewComponent';
+import TextComponent from './TextComponent';
 
 type GoogleSlideProps = React.HTMLProps<HTMLIFrameElement> & {
   width: string;
   height: string;
-  borderRadius: string;
   slideTitle?: string;
-  presentationId: string;
-  position: number;
+  borderRadius: string;
   ErrorComponent?: React.ReactNode | React.ElementType;
 }
 
-const GoogleSlide = ({
+interface TextComponent {
+  onInputChange: (value: string) => void
+  rndPosition: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }
+}
+
+const GoogleSlide: React.FC<GoogleSlideProps> = ({
   width,
   height,
   borderRadius,
   slideTitle,
-  presentationId,
-  position,
-  ErrorComponent
-}: GoogleSlideProps) => {
-
-  /**
-   * Generates iframe compatible url to display the presentation
-   * @param presentationId The Google Slides presentation key
-   * @param position number to show the current slide
-   */
-  const constructUrl = (presentationId: string | null, position: number): string => {
-    let baseUrl = 'https://docs.google.com/presentation/d/';
-    baseUrl += `${presentationId}/embed?`;
-
-    if (position) {
-      baseUrl += `&slide=${position}&rm=minimal`;
-    }
-
-    return baseUrl;
-  };
-
-  const embedURL = constructUrl(presentationId, position);
-
-  if (!presentationId && ErrorComponent) {
-    return <>{ErrorComponent}</>;
-  }
+}) => {
+  const {
+    textComponents,
+    handleAddText,
+    handleAddImage,
+    handleAddMetric,
+    handleCompDataStorage,
+    handleInputChange,
+    handleDragChange,
+    handleResizeChange,
+  } = useTextContent();
 
   return (
-    <Box
-      pt={3}
-      color="white"
-      {...slideTitle ? { bg: "blue.500", borderRadius: borderRadius } : ""}
-    >
-      <Box
-        mx={2}
-        mt={-1}
-        mb={1}
-        px={6}
-        border="1px"
-        borderColor="white"
-        borderRadius={8}
-        width="fit-content"
-      >
-        <Text textAlign="start" fontWeight="medium">{slideTitle}</Text>
-      </Box>
+    <Fragment>
+      <AddNewComponent
+        handleAddImage={handleAddImage}
+        handleAddMetric={handleAddMetric}
+        handleAddText={handleAddText}
+      />
 
-      <iframe
-        title="Google Slides"
-        src={embedURL}
-        width={width}
-        height={height}
-        allowFullScreen
-      ></iframe>
-    </Box>
+      <Box
+        pt={3}
+        color="white"
+        width="full"
+        {...slideTitle ? { bg: "blue.500", borderRadius: borderRadius } : ""}
+      >
+        {slideTitle ? (
+          <Text
+            mx={2}
+            mt={-1}
+            mb={1}
+            px={6}
+            border="1px"
+            borderColor="white"
+            borderRadius={8}
+            textAlign="start"
+            fontWeight="medium"
+          >
+            {slideTitle}
+          </Text>
+        ) : null}
+
+        <Box bg="white" width={width} height={height}>
+          {textComponents.map((comp, index) => (
+            <TextComponent
+              key={index}
+              rndPosition={comp}
+              onInputChange={(value) => handleInputChange(index, value)}
+              onDragChange={(value) => handleDragChange(index, value)}
+              onResizeChange={(value) => handleResizeChange(index, value)}
+              onFocusChange={handleCompDataStorage}
+            />
+          ))}
+        </Box>
+      </Box>
+    </Fragment>
   )
 }
 
-export default GoogleSlide
+export default GoogleSlide;

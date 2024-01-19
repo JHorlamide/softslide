@@ -21,6 +21,7 @@ const CreateSlide: React.FC<CreateSlideProps> = ({
   return (
     <Fragment>
       <CreateSlidModal
+        loading={loading}
         isOpen={isOpen}
         onClose={onClose}
         handleCreate={createNewGoogleSlide}
@@ -50,7 +51,6 @@ const CreateSlide: React.FC<CreateSlideProps> = ({
                 />
 
                 <CardButton
-                  loading={loading}
                   title="Create a new Google Slides presentation"
                   handleClick={onOpen}
                 />
