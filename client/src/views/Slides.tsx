@@ -10,7 +10,8 @@ import { slideService } from "../services/restService";
 
 const Slides = () => {
   const [slides, setSlides] = useState<any[]>([]);
-  const presentationId = localStorage.getItem("presentationId") as string;
+  const slideData = JSON.parse(localStorage.getItem("slideData") as string);
+  const presentationId = slideData?.presentationId;
   const slideTitle = localStorage.getItem("slideTitle") as string;
 
   const fetchSlides = async () => {

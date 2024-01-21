@@ -69,6 +69,7 @@ const CreateSlidModal = ({
             ml={3}
             isLoading={loading}
             bg="blackAlpha.800"
+            color="white"
             _hover={{ bg: "blackAlpha.800" }}
             onClick={() => handleCreate(title)}
           >

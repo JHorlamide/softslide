@@ -22,5 +22,31 @@ export const addChartSchema = Joi.object({
   presentationId: Joi.string().max(100).required(),
   slideId: Joi.string().required(),
   spreadsheetId: Joi.string().required()
-})
+});
+
+export const publishDocSchema = Joi.object({
+  data: Joi.object({
+    slideId: Joi.string().required(),
+    textContent: Joi.array().items(
+      Joi.object({
+        x: Joi.number().required(),
+        y: Joi.number().required(),
+        width: Joi.number().required(),
+        height: Joi.number().required(),
+        text: Joi.string().required(),
+      })
+    ),
+
+    chartContent: Joi.array().items(
+      Joi.object({
+        x: Joi.number().required(),
+        y: Joi.number().required(),
+        width: Joi.number().required(),
+        height: Joi.number().required(),
+        chartOptions: Joi.object().required(),
+      })
+    ),
+  }).required(),
+});
+
 

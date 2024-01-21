@@ -6,10 +6,11 @@ import { useDisclosure } from "@chakra-ui/react";
 import toast from "react-hot-toast";
 
 /* Application Module */
-import { authService } from "../services/restService";
+import { authService, slideService } from "../services/restService";
 
 export const useAuthHeader = () => {
   const location = useLocation();
+  const [loadingPublish, setLoadingPublish] = useState(false);
   const [loginUrl, setLoginUrl] = useState("");
   const { isOpen, onOpen, onClose } = useDisclosure();
   const access_token = localStorage.getItem("access_token");
@@ -26,8 +27,6 @@ export const useAuthHeader = () => {
     setTimeout(() => {
       window.location.reload();
     }, 1000);
-
-    console.log("I was called");
   }
 
   const getLoginUrl = async () => {
@@ -40,8 +39,32 @@ export const useAuthHeader = () => {
     }
   }
 
-  const handlePublishDocument = () => {
+  const handlePublishDocument = async () => {
+    setLoadingPublish(true);
+    const slideData = JSON.parse(localStorage.getItem("slideData") as string);
 
+    const payload = {
+      slideId: slideData.slideId,
+      textContent: localStorage.getItem("textContent"),
+      chartContent: localStorage.getItem("chartContent")
+    }
+
+    try {
+      const response = await slideService.publishDocument(payload);
+      if (response.status === 201) {
+        setLoadingPublish(false);
+        const data = response.data;
+        console.log({ data });
+        return toast.success(data.message);
+      }
+
+      console.log({ response });
+
+    } catch (error: any) {
+      setLoadingPublish(false);
+      toast.error(`Error publishing Documents: ${error.message}`);
+      console.log("Error publishing Documents: ", error);
+    }
   }
 
   const onSubmit = async () => {
@@ -67,6 +90,7 @@ export const useAuthHeader = () => {
   return {
     isOpen,
     isTokenExist,
+    loadingPublish,
     logout,
     onClose,
     onOpen,

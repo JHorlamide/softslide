@@ -17,7 +17,8 @@ export const useSlide = ({ docType }: UseSlidProps) => {
   const [openPicker] = useDrivePicker();
   const [loading, setLoading] = useState(false);
   const accessToken = localStorage.getItem("access_token");
-  const presentationId = localStorage.getItem("presentationId") as string;
+  const slideData = JSON.parse(localStorage.getItem("slideData") as string);
+  const presentationId = slideData?.presentationId;
 
   const callBackFun = (data: PickerCallback) => {
     if (data.action === 'cancel') {
@@ -47,23 +48,28 @@ export const useSlide = ({ docType }: UseSlidProps) => {
     })
   }
 
-  const createNewGoogleSlide = async (title: string) => {
+  const createGooglePresentationSlide = async (title: string) => {
+    setLoading(true);
+
     try {
-      setLoading(true);
-      const response = await slideService.createPresentation({ title });
+      const response = await slideService.createPresentationSlide({ title });
 
       if (response.status === 201) {
         setLoading(false);
         const { data } = response.data;
-        localStorage.setItem("presentationId", data.presentationId);
-        localStorage.setItem("slideTitle", data.title);
-      } else {
-        console.log({ response })
-        toast.error("Error creating slide");
+
+        localStorage.setItem("slideData", JSON.stringify({
+          title: data.title,
+          slideId: data.slideId,
+          presentationId: data.presentationId
+        }));
+
+        return toast.success("Slide created successfully");
       }
+
+      toast.error("Error creating slide");
     } catch (error: any) {
       setLoading(false);
-
       if (error.response && error.response.data) {
         const { message } = error.response.data;
         toast.error(message);
@@ -78,6 +84,6 @@ export const useSlide = ({ docType }: UseSlidProps) => {
     accessToken,
     presentationId,
     handleOpenPicker,
-    createNewGoogleSlide,
+    createGooglePresentationSlide,
   }
 }

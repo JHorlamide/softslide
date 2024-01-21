@@ -15,8 +15,8 @@ class SlideManagerController {
 
   public createSlidePresentation = asyncHandler(async (req: Request, res: Response) => {
     const { title } = req.body;
-    const presentationId = await slideManagerService.createSlidePresentation(title);
-    responseHandler.resourceCreated("Slide created successfully", { presentationId, title }, res);
+    const response = await slideManagerService.createSlidePresentation(title);
+    responseHandler.resourceCreated("Slide created successfully", { ...response, title }, res);
   });
 
   public createSlide = asyncHandler(async (req: Request, res: Response) => {
@@ -45,6 +45,12 @@ class SlideManagerController {
     });
 
     responseHandler.resourceCreated("Chart added successfully", { ...response }, res);
+  });
+
+  public publishDocToDrive = asyncHandler(async (req: Request, res: Response) => {
+    const { data } = req.body;
+    const response = await slideManagerService.publishDocToDrive(data);
+    responseHandler.resourceCreated("Document published successfully", { response }, res);
   });
 }
 

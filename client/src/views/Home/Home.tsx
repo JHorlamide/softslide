@@ -13,7 +13,7 @@ const Home = () => {
     presentationId,
     loading,
     handleOpenPicker,
-    createNewGoogleSlide
+    createGooglePresentationSlide
   } = useSlide({ docType: "slide" });
 
   return (
@@ -24,7 +24,7 @@ const Home = () => {
         <CreateSlide
           loading={loading}
           handleOpenPicker={handleOpenPicker}
-          createNewGoogleSlide={createNewGoogleSlide}
+          createGooglePresentationSlide={createGooglePresentationSlide}
         />
       )}
     </Box>

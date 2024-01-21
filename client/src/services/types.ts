@@ -7,13 +7,3 @@ export interface CreatePresentationRes {
   message: string;
   data: {};
 }
-
-export interface CreateSlide {
-
-}
-
-export interface CreateSlideRes {
-  status: string;
-  message: string;
-  data: {};
-}

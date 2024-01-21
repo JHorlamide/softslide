@@ -18,8 +18,8 @@ export class SlideManagerRoute extends CommonRoutesConfig {
     /***
     * @route  GET: /api/slides/:presentationId
     * @description   Get all slides.
-    * @param {string} presentationId
     * @access Private.
+    * @param {string} presentationId
     * ***/
     this.app.get(`${APP_PREFIX_PATH}/slides/:presentationId`, [
       slideMiddleware.validatePresentationIdExistInParam,
@@ -29,8 +29,8 @@ export class SlideManagerRoute extends CommonRoutesConfig {
     /***
     * @route  POST: /api/slides/presentation
     * @description   Create new slide presentation.
-    * @body {title: string} The title presentation.
     * @access Private.
+    * @body {title: string} The title presentation.
     * ***/
     this.app.post(`${APP_PREFIX_PATH}/slides/presentation`, [
       slideMiddleware.validateCreatePresentationReq,
@@ -40,8 +40,8 @@ export class SlideManagerRoute extends CommonRoutesConfig {
     /***
     * @route  POST: /api/slides
     * @description   Create new slide.
-    * @body {presentationId: string} The presentationId of the slide to be created.
     * @access Private.
+    * @body {presentationId: string} The presentationId of the slide to be created.
     * ***/
     this.app.post(`${APP_PREFIX_PATH}/slides`, [
       slideMiddleware.validateCreateSlidReq,
@@ -51,21 +51,45 @@ export class SlideManagerRoute extends CommonRoutesConfig {
     /***
     * @route  POST: /api/slides/comment
     * @description   Add comments to a slid.
+    * @access Private.
     * @body {
     *   comments: string, (The comment to be added to the slid.)
     *   presentationId: string, (The presentationId of slide.) 
     *   slidId: string, (The id of the slid to add the comment to.)
     * } 
-    * @access Private.
     * ***/
     this.app.post(`${APP_PREFIX_PATH}/slides/comment`, [
       slideMiddleware.validateCreateCommentReq,
       slideController.addCommentToSlide
     ]);
 
+    /***
+    * @route  POST: /api/slides/chart
+    * @description Add chart to a slid.
+    * @access Private.
+    * @body {
+    *   presentationId: string, (The presentationId of the slid.)
+    *   slideId: string, (The slidId of slide.) 
+    *   spreadsheetId: string, (The spreadsheet ID to get the chart from.)
+    * } 
+    * ***/
     this.app.post(`${APP_PREFIX_PATH}/slides/chart`, [
       slideMiddleware.validateAddChartReq,
       slideController.addMetricToSlide
+    ]);
+
+    /***
+    * @route  POST: /api/slides/publish
+    * @description Publish doc to google drive.
+    * @access Private.
+    * @body {
+    *   textContent: [object], (The textContent of the published slide.)
+    *   chartContent: [object], (The chartContent of the published slide.) 
+    * } 
+    * ***/
+    this.app.post(`${APP_PREFIX_PATH}/slides/publish`, [
+      slideMiddleware.validatePublishDocReq,
+      slideController.publishDocToDrive
     ]);
 
     return this.app;

@@ -5,7 +5,7 @@ interface TextComponent {
   y: number;
   width: number;
   height: number;
-  inputValue: string;
+  text: string;
 }
 
 export const useTextContent = () => {
@@ -17,7 +17,7 @@ export const useTextContent = () => {
       y: 0,
       width: 600,
       height: 100,
-      inputValue: ""
+      text: ""
     }
 
     setTextComponents(prevState => ([...prevState, {
@@ -27,9 +27,9 @@ export const useTextContent = () => {
     }]));
   }
 
-  const handleInputChange = (index: number, inputValue: string) => {
+  const handleInputChange = (index: number, text: string) => {
     const updateComponent = [...textComponents];
-    textComponents[index].inputValue = inputValue;
+    textComponents[index].text = text;
     setTextComponents(updateComponent);
   }
 
@@ -47,23 +47,18 @@ export const useTextContent = () => {
     setTextComponents(updateComponent);
   }
 
-  const handleAddMetric = () => {
-    console.log("Metric Added")
-  }
-
   const handleAddImage = () => {
     console.log("Image Added")
   }
 
   const handleCompDataStorage = () => {
-    localStorage.setItem("slideContent", JSON.stringify(textComponents));
+    localStorage.setItem("textContent", JSON.stringify(textComponents));
   }
 
   return {
     textComponents,
     setTextComponents,
     handleAddText,
-    handleAddMetric,
     handleAddImage,
     handleCompDataStorage,
     handleInputChange,

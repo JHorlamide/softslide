@@ -7,6 +7,8 @@ import { Box, Text, } from '@chakra-ui/react'
 import { useTextContent } from '../../hooks/useTextContent';
 import AddNewComponent from './AddNewComponent';
 import TextComponent from './TextComponent';
+import ChartComponent from './ChartComponent';
+import { useChartContent } from '../../hooks/useChartContent';
 
 type GoogleSlideProps = React.HTMLProps<HTMLIFrameElement> & {
   width: string;
@@ -36,19 +38,27 @@ const GoogleSlide: React.FC<GoogleSlideProps> = ({
     textComponents,
     handleAddText,
     handleAddImage,
-    handleAddMetric,
     handleCompDataStorage,
     handleInputChange,
     handleDragChange,
     handleResizeChange,
   } = useTextContent();
 
+  const {
+    chartComponents,
+    handleAddChart,
+    handleChartOptionChange,
+    handleChartDragChange,
+    handleChartResizeChange,
+    handleChartDataStorage
+  } = useChartContent();
+
   return (
     <Fragment>
       <AddNewComponent
         handleAddImage={handleAddImage}
-        handleAddMetric={handleAddMetric}
         handleAddText={handleAddText}
+        handleAddChart={handleAddChart}
       />
 
       <Box
@@ -82,6 +92,17 @@ const GoogleSlide: React.FC<GoogleSlideProps> = ({
               onDragChange={(value) => handleDragChange(index, value)}
               onResizeChange={(value) => handleResizeChange(index, value)}
               onFocusChange={handleCompDataStorage}
+            />
+          ))}
+
+          {chartComponents.map((chart, index) => (
+            <ChartComponent
+              key={index}
+              rndPosition={chart}
+              onDragChange={(value) => handleChartDragChange(index, value)}
+              onResizeChange={(value) => handleChartResizeChange(index, value)}
+              handleChartDataStorage={handleChartDataStorage}
+              handleChartOptionChange={(chartOptions) => handleChartOptionChange(index, chartOptions)}
             />
           ))}
         </Box>

@@ -1,45 +1,15 @@
 import { useAuthHeader } from '../../hooks/useAuthHeader';
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
+
 /* Libraries */
-import {
-  Box,
-  Flex,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  Button as ChakraButton
-} from "@chakra-ui/react"
+import { Flex } from "@chakra-ui/react"
 import { FaGoogleDrive } from "react-icons/fa";
 
 /* Application Modules */
 import Button from "../CustomBtn/Button"
-import { IoIosArrowDown } from "react-icons/io";
-import { MdInsertChartOutlined } from "react-icons/md";
-import { IoDocumentTextOutline } from "react-icons/io5";
-import { CiImageOn } from "react-icons/ci";
-import { useTextContent } from '../../hooks/useTextContent';
 
-interface TextComponent {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
-
-interface TestMe {
-  x?: number;
-  y?: number;
-}
-
-const AuthenticatedUserHeader: React.FC<TestMe> = () => {
-  const { logout, handlePublishDocument } = useAuthHeader();
-  const {
-    textComponents,
-    handleAddImage,
-    handleAddMetric,
-    handleAddText
-  } = useTextContent();
+const AuthenticatedUserHeader = () => {
+  const { logout, handlePublishDocument, loadingPublish } = useAuthHeader();
 
   const handlePastDocument = () => { };
 
@@ -68,6 +38,7 @@ const AuthenticatedUserHeader: React.FC<TestMe> = () => {
           border="1px"
           borderColor="blackAlpha.500"
           _hover={{ bg: "white.200" }}
+          isLoading={loadingPublish}
           onClick={handlePublishDocument}
         >
           Publish now

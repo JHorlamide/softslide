@@ -19,7 +19,12 @@ const HeaderNav = () => {
       justifyContent="flex-end"
     >
       <Box>
-        {isTokenExist ? (<AuthenticatedUserHeader />) : (<UnAuthenticatedUserHeader submit={onSubmit} />)}
+        {isTokenExist ? (
+          <AuthenticatedUserHeader />
+        ) : (
+          <UnAuthenticatedUserHeader submit={onSubmit} />
+        )
+        }
       </Box >
     </Box>
   )

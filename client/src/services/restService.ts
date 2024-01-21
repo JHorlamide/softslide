@@ -29,8 +29,13 @@ export const slideService = {
     return restApiAgent.get(`/slides/${presentationId}`, config);
   },
 
-  createPresentation: (payload: CreatePresentation) => {
+  createPresentationSlide: (payload: CreatePresentation) => {
     const config = getRequestConfig();
     return restApiAgent.post("/slides/presentation", payload, config);
+  },
+
+  publishDocument: (payload: any) => {
+    const config = getRequestConfig();
+    return restApiAgent.post("/slides/publish", { data: payload }, config);
   }
 }

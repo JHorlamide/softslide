@@ -8,13 +8,13 @@ import CreateSlidModal from "./CreateSlidModal";
 interface CreateSlideProps {
   loading: boolean;
   handleOpenPicker: () => void;
-  createNewGoogleSlide: (title: string) => void;
+  createGooglePresentationSlide: (title: string) => void;
 }
 
 const CreateSlide: React.FC<CreateSlideProps> = ({
   loading,
   handleOpenPicker,
-  createNewGoogleSlide
+  createGooglePresentationSlide
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -24,7 +24,7 @@ const CreateSlide: React.FC<CreateSlideProps> = ({
         loading={loading}
         isOpen={isOpen}
         onClose={onClose}
-        handleCreate={createNewGoogleSlide}
+        handleCreate={createGooglePresentationSlide}
       />
 
       <Box width="full" mt="12%">
@@ -64,4 +64,4 @@ const CreateSlide: React.FC<CreateSlideProps> = ({
   )
 }
 
-export default CreateSlide
+export default CreateSlide;

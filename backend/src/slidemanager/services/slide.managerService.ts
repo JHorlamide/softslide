@@ -1,27 +1,37 @@
 /* Core */
 import crypto from "crypto";
+import fs from "fs";
+import path from "path";
 
 /* Libraries */
-import { google, slides_v1, sheets_v4 } from "googleapis";
+import { google, slides_v1, sheets_v4, drive_v3 } from "googleapis";
+import pptx from "pptxgenjs";
 
 /* Application Modules */
 import authService from "../../auth/service/auth.service";
+import { CreateChartSlide, CreateComment } from "../types/types";
+import { ChartContent, ChartOptions, ChartSeriesItem, PublishDoc, TextContent } from "../../config/types";
 import {
   ClientError,
   NotFoundError,
   ServerError
 } from "../../common/exceptions/api.error";
-import { CreateChartSlide, CreateComment } from "../types/types";
 
 class SlideManagerService {
   private slideService: slides_v1.Slides;
 
   private sheetService: sheets_v4.Sheets;
 
+  private driveService: drive_v3.Drive;
+
+  private PUBLISH_FILE_PATH: string;
+
   constructor() {
     const auth = authService.getAuth();
     this.sheetService = google.sheets({ version: "v4", auth });
     this.slideService = google.slides({ version: "v1", auth });
+    this.driveService = google.drive({ version: "v3", auth });
+    this.PUBLISH_FILE_PATH = path.join(process.cwd(), "/src/output.pptx");
   }
 
   public async listSlides(presentationId: string) {
@@ -40,17 +50,18 @@ class SlideManagerService {
     }
   }
 
-  public async createSlidePresentation(title: string): Promise<string> {
+  public async createSlidePresentation(title: string): Promise<Object> {
     const presentation = await this.slideService.presentations.create({
       requestBody: { title }
     });
 
-    return presentation.data.presentationId as string;
+    const presentationId = presentation.data.presentationId as string;
+    const slideId = await this.createSlide(presentationId);
+    return { presentationId, slideId };
   }
 
   public async createSlide(presentationId: string): Promise<string | null | undefined> {
     const pageId = this.generateUniqueID();
-
     const requests = [
       {
         createSlide: {
@@ -69,7 +80,6 @@ class SlideManagerService {
       });
 
       const replies = response.data.replies;
-
       if (replies?.length === 0) {
         throw new ClientError("Requested entity was not found.");
       }
@@ -79,7 +89,6 @@ class SlideManagerService {
       if (error.message === "Requested entity was not found.") {
         throw new ClientError(error.message);
       }
-
       throw new ServerError(error.message);
     }
   }
@@ -183,6 +192,101 @@ class SlideManagerService {
       });
 
       return response.data;
+    } catch (error: any) {
+      throw new ServerError(error.message);
+    }
+  }
+
+  public async publishDocToDrive(data: PublishDoc) {
+    const { textContent, chartContent, slideId } = data;
+    const presentation = new pptx();
+    
+    try {
+      if (textContent && textContent.length > 0) {
+        this.addTextToPresentationSlide(presentation, textContent);
+      }
+
+      if (chartContent && chartContent.length > 0) {
+        this.addChartToPresentationSlide(presentation, chartContent);
+      }
+
+      const res = await presentation.writeFile({ fileName: this.PUBLISH_FILE_PATH });
+      const fileId = await this.uploadFileFromDrive(slideId);
+      return { fileId, res };
+    } catch (error: any) {
+      throw new ServerError(error.message);
+    }
+  }
+
+  private addTextToPresentationSlide(presentation: pptx, textContent: TextContent) {
+    textContent.map((content, index) => {
+      const slide = presentation.addSlide();
+      slide.addText(content.text, {
+        x: parseInt(`0.${index}`),
+        y: parseInt(`0.${index}`),
+        w: "100%",
+        h: "100%",
+        fontSize: 36,
+        align: "left",
+        fill: { color: 'D3E3F3' },
+        color: 'FFFFFF',
+        isTextBox: true,
+        valign: "top"
+      });
+    });
+  }
+
+  private addChartToPresentationSlide(presentation: pptx, chartContent: ChartContent) {
+    chartContent.map((content) => {
+      const slide = presentation.addSlide();
+      const chartOptions = this.extractChartSeries(content.chartOptions);
+      slide.addChart(presentation.ChartType.bar, chartOptions, {
+        x: 0.5,
+        y: 0.5,
+        w: "90%",
+        h: "90%",
+      });
+    });
+  }
+
+  private extractChartSeries(chartOptions: ChartOptions): ChartSeriesItem[] {
+    return chartOptions.series.reduce((result, option) => {
+      const existingEntry = result.find((entry) => entry.name === option.name);
+
+      if (existingEntry) {
+        existingEntry.labels.push(option.stack);
+        existingEntry.values.push(...option.data);
+      } else {
+        result.push({
+          name: option.name,
+          labels: [option.stack],
+          values: [...option.data],
+        });
+      }
+
+      return result;
+    }, [] as ChartSeriesItem[]);
+  }
+
+  private async uploadFileFromDrive(slideId: string) {
+    const fileMetadata = {
+      name: this.PUBLISH_FILE_PATH,
+      MimeTypeArray: ["fileMetadata"]
+    };
+
+    const media = {
+      fileId: slideId,
+      mimeType: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+      body: fs.createReadStream(this.PUBLISH_FILE_PATH),
+    };
+
+    try {
+      const file = await this.driveService.files.create({
+        requestBody: fileMetadata,
+        media: media,
+      });
+
+      return file.data.id;
     } catch (error: any) {
       throw new ServerError(error.message);
     }
