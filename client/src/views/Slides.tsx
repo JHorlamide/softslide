@@ -16,11 +16,18 @@ const Slides = () => {
 
   const fetchSlides = async () => {
     try {
-      const response = await slideService.getAllSlides(presentationId);
-      const data = response.data;
-      setSlides(data.data.slides);
+      if (presentationId) {
+        const response = await slideService.getAllSlides(presentationId);
+        if (response.status === 200) {
+          const data = response.data;
+          return setSlides(data.data.slides);
+        }
+
+        toast.error(response.data.message);
+      }
+
+      return;
     } catch (error: any) {
-      console.log(error)
       toast.error(error.message);
     }
   }

@@ -54,12 +54,10 @@ export const useAuthHeader = () => {
       if (response.status === 201) {
         setLoadingPublish(false);
         const data = response.data;
-        console.log({ data });
         return toast.success(data.message);
       }
 
       console.log({ response });
-
     } catch (error: any) {
       setLoadingPublish(false);
       toast.error(`Error publishing Documents: ${error.message}`);
@@ -78,8 +76,7 @@ export const useAuthHeader = () => {
   const logout = () => {
     localStorage.setItem("access_token", "");
     localStorage.setItem("refresh_token", "");
-    localStorage.setItem("presentationId", "");
-    localStorage.setItem("slideId", "");
+    localStorage.setItem("slideData", JSON.stringify({}));
     window.location.reload();
   }
 
